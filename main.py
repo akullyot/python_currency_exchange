@@ -51,12 +51,39 @@ class Currency:
         else:
             sum = other + (self.value/  Currency.currencies[self.unit]* Currency.currencies['USD']) 
         return Currency(sum, 'USD')
+    #Purpose: defines the - operator to subtract values
+    #Params: Options for other:
+    #           Currency Object: converts unit to self then subs other.value
+    #           Float or Int:    assumes its in USD, converts if needed, and subs 
     def __sub__(self,other):
-        pass
+        if isinstance(other, Currency):
+            # check if the currencies are the same 
+            if self.unit == other.unit:
+                subbed_val =  self.value - other.value
+            else:
+                other_value_converted = (other.value/  Currency.currencies[other.unit]* Currency.currencies[self.unit])  
+                subbed_val =  self.value - other_value_converted
+        elif isinstance(other, int) or isinstance(other, float):
+            if self.unit == 'USD':
+                subbed_val =  self.value - other
+            else:
+                subbed_val =  self.value - (other/ Currency.currencies["USD"] * Currency.currencies[self.unit])     
+        else:
+            raise ValueError("Other must be of type Currency or an integer or float")
+        return Currency(subbed_val, self.unit)
+    #Purpose: as far as I can tell tis the same as sub
     def __isub__(self, other):
-        pass
-    def __rsub__(slef, other):
-        pass
+        return (Currency.__sub__(self,other))
+    #Purpose: deals with when a int/float has a Currency object subtracted from it
+    #Note: will always assume the INT/FLOAT is USD and returns USD
+    def __rsub__(self, other):
+        if (self.unit == 'USD'):
+            subbed_val = other - self.value
+        else:
+            subbed_val = other - (self.value/  Currency.currencies[self.unit]* Currency.currencies['USD']) 
+        return Currency(subbed_val, 'USD')
+    
+
 
 
 
@@ -71,8 +98,7 @@ print(v1 + v2)
 print(v2 + v1)
 #Test2: adding ints or floats
 print(v1 + 3) # an int or a float is considered to be a USD value
-print("next")
 print(3 + v1)
-
-#print(v1 - 3) # an int or a float is considered to be a USD value
-#print(30 - v2) 
+#Test 3: subtracting 
+print(v1 - 3) # an int or a float is considered to be a USD value
+print(30 - v2) 
